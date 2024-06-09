@@ -6,9 +6,6 @@ import plotly.express as px
 import streamlit as st
 import plotly.graph_objects as go
 
-
-# %% Objekt-Welt
-
 class EKGdata:
 
 ## Konstruktor der Klasse soll die Daten einlesen
