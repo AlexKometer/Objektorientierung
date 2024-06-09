@@ -53,8 +53,6 @@ This is the 4th small assignement of the programming exercise 2.
 
 ## Functions
 ### main.py
-- **`st.title("ECG-APP")`**: Sets the title of the Streamlit application.
-- **`st.write("### ECG Data")`**: Writes a subheader for the ECG data section.
 - **`Person.load_person_data()`**: Loads person data from the JSON file.
 - **`Person.get_person_list(persons)`**: Retrieves a list of person names.
 - **`Person.find_person_data_by_id(person_id)`**: Finds and returns person data by ID.
