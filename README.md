@@ -75,8 +75,8 @@ This is the 4th small assignement of the programming exercise 2.
 - **`EKGdata.estimate_hr(peaks)`**: Estimates the heart rate from the peaks.
 - **`EKGdata.plot_time_series(path, peaks)`**: Plots the ECG time series data and highlights peaks.
 
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Authors
+Georg Sagmeister, Alexander Kometer
 
 ## Acknowledgements
 - [Streamlit](https://streamlit.io/)
