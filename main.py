@@ -1,30 +1,41 @@
-import json
-import pandas as pd
+import streamlit as st
 from ecgdata import EKGdata
 from classes import Person
 
-"""print("This is a module with some functions to read the person data")
+
+st.title("ECG-APP")
+st.write("### ECG Data")
+ekg_list = []
+link_list = []
+
+
 persons = Person.load_person_data()
 person_names = Person.get_person_list(persons)
-
-print("Welcome to Personfinder")
-person_id = int(input("Enter ID of Persson: "))
-Name = input("Name of Person: ")
+person_id = st.number_input("Enter ID of Persson: ", min_value=1, max_value=3, value=1, step=1)
 person_dict = Person.find_person_data_by_id(person_id)
 user_name = person_dict["firstname"]
 user_name = Person(person_dict)
-print(user_name.date_of_birth)"""
+
+st.write(user_name.firstname,user_name.lastname,user_name.date_of_birth)
+
+ekg = EKGdata.load_by_id(user_name.id)
 
 
-print("This is a module with some functions to read the EKG data")
+for element in ekg:
+    ekg_list.append(element['id'])
 
-id = int(input("ID des EKG: "))
+selected = st.radio("Select a ECG",options=ekg_list, key="sbECG")
 
-ekg = EKGdata.load_by_id(id)
-print(ekg)
-peaks  = EKGdata.find_peaks(ekg['result_link'])
+for element in ekg:
+    if element['id'] == selected:
+        link = element['result_link']
+    else:
+        print("No EKG found!")
+
+peaks = EKGdata.find_peaks(link)
+
 hr_mean = EKGdata.estimate_hr(peaks)
-print(hr_mean)
+st.write(hr_mean,"bpm")
 
-EKGdata.plot_time_series(ekg['result_link'])
+EKGdata.plot_time_series(link, peaks)
 

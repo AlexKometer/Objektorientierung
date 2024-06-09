@@ -4,6 +4,7 @@ import scipy as sc
 import numpy as np
 import plotly.express as px
 import streamlit as st
+import plotly.graph_objects as go
 
 
 # %% Objekt-Welt
@@ -26,10 +27,8 @@ class EKGdata:
             return {}
 
         for eintrag in person_data:
-            search =  eintrag['ekg_tests']
-            for elements in search:
-                if (elements['id'] == suchstring):
-                    return elements
+            if suchstring == eintrag['id']:
+                return eintrag['ekg_tests']
 
         else:
             return {}
@@ -52,18 +51,44 @@ class EKGdata:
         peak_interval = np.diff(peaks[0])
         peak_interval_seconds = peak_interval / 1000
         hr = np.round(60 / peak_interval_seconds, 0)
-        hr_mean = np.round(hr.mean(), 0)
+        hr_mean = int(np.round(hr.mean()))
         return hr_mean
 
-    def plot_time_series(path):
+    def plot_time_series(path, peaks):
         df = EKGdata.read_ecg_data(path)
-        fig = px.line(df, x="Zeit in ms", y="Messwerte in mV")
 
-        st.title("ECG-APP")
-        st.write("### ECG Data")
-        st.plotly_chart(fig)
+        max_seconds = len(df) // 500
+        selected_area_start = 500 * st.sidebar.number_input("Start of the selected area (in s) :", min_value=0,
+                                                    max_value=max_seconds, value=0)
+        selected_area_end = (500 * st.sidebar.number_input("End of the selected area (in s) :", min_value=0,
+                                                   max_value=max_seconds, value=max_seconds))
 
-        print("HILFEEEEEEEEEEEEEEEEEEEEEEE")
+        if selected_area_start < selected_area_end:
+            filtered_df_ecg = df.iloc[selected_area_start:selected_area_end]
+            filtered_df_ecg["Zeit in s"] = filtered_df_ecg["Zeit in ms"] / 1000  # Scale x-axis to seconds
+            fig_ecg_marked = px.line(filtered_df_ecg, x="Zeit in s", y="Messwerte in mV")
+            fig_ecg_marked.update_layout(title="ECG Data", xaxis_title="Time in s", yaxis_title="Voltage in mV")
+        else:
+            st.error("Start value must be less than end value.")
+            fig_ecg_marked = px.line()
+
+        peak_indices = peaks[0]
+        # Filter peaks within the selected range
+        filtered_peaks = [peak for peak in peak_indices if selected_area_start <= peak < selected_area_end]
+        if filtered_peaks:
+            peak_times = df.iloc[filtered_peaks]["Zeit in ms"].to_numpy() / 1000
+            peak_values = df.iloc[filtered_peaks]["Messwerte in mV"].to_numpy()
+
+            fig_ecg_marked.add_trace(go.Scatter(x=peak_times,
+                                                y=peak_values,
+                                                mode="markers",
+                                                marker=dict(size=10, color="red"),
+                                                name="Peak"))
+
+
+        st.plotly_chart(fig_ecg_marked)
+
+
 
 
 

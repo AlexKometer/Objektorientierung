@@ -1,5 +1,5 @@
 import json
-import pandas as pd
+
 
 class Person:
     @staticmethod
@@ -24,12 +24,12 @@ class Person:
         und die die Person als Dictionary zurück gibt"""
 
         person_data = Person.load_person_data()
-        # print(suchstring)
+
         if suchstring == "None":
             return {}
 
         for eintrag in person_data:
-            #print(eintrag)
+
             if (eintrag["id"] == suchstring):
                 print()
 
